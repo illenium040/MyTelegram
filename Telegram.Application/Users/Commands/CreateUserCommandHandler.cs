@@ -22,10 +22,11 @@ namespace Telegram.Application.Users.Commands
                 request.DisplayName,
                 request.UserName,
                 request.Email,
+                request.Password,
                 request.AvatarLink,
                 request.About);
 
-            var result = await _userRepository.CreateAsync(user, request.Password);
+            var result = await _userRepository.CreateAsync(user);
 
             if (result.IsSuccess)
             {

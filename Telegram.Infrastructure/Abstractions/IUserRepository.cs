@@ -10,7 +10,7 @@ namespace Telegram.Infrastructure.Abstractions
         Task<User?> GetByNameAsync(string userName);
         Task<User?> GetByEmailAsync(string email);
 
-        Task<Result> CreateAsync(User user, string password);
+        Task<Result> CreateAsync(User user);
 
         void AppendChat(UserChat userChat);
     }

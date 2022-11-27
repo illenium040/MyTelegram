@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Application.Users.Commands;
+using Telegram.Application.Users.Queries;
 using Telegram.Infrastructure.Abstractions;
 using Telegram.Presentation.Abstractions;
 
@@ -18,9 +19,13 @@ namespace Telegram.Presentation.Controllers
         public async Task<IActionResult> GetAllAsync() => Ok(_userRepository.GetAllAsync());
 
         [HttpGet]
-        public async Task<IActionResult> Get(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByName(
+            [FromQuery] string? displayName,
+            [FromQuery] string? userName,
+            [FromQuery] Guid? id,
+            CancellationToken cancellationToken)
         {
-            var command = new CreateUserCommand("createUser@mail.ru", "xdd", "xdd", "asd213!ssSs$");
+            var command = new GetUserQuery(id, userName, displayName);
             var result = await Sender.Send(command, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value!.Id) : HandleFailure(result);

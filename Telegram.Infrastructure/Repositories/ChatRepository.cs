@@ -16,5 +16,16 @@ namespace Telegram.Infrastructure.Repositories
         }
 
         public void AppendUser(UserChat user) => _userChats.Add(user);
+
+        //need some tests
+        public async Task<bool> IsExisting(User first, User second)
+        {
+            var result = await _chats
+                .Include(x => x.UserChats)
+                .SelectMany(x => x.UserChats.Where(uc => uc.UserId == first.Id).Select(x => x.Chat))
+                .SelectMany(x => x.UserChats)
+                .FirstOrDefaultAsync(x => x.UserId == second.Id);
+            return result is not null;
+        }
     }
 }

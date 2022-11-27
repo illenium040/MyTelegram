@@ -24,13 +24,13 @@ namespace Telegram.Presentation.Abstractions
                 BadRequest(
                     CreateProblemDetails(
                         "Validation Error", StatusCodes.Status400BadRequest,
-                        result.Error,
+                        result.Error!,
                         vResult.Errors)),
                 _ => BadRequest(
                     CreateProblemDetails(
                         "Bad Request",
                         StatusCodes.Status400BadRequest,
-                        result.Error))
+                        result.Error!))
             };
 
         private static ProblemDetails CreateProblemDetails(

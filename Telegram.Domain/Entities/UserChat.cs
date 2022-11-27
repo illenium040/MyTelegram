@@ -6,7 +6,7 @@ namespace Telegram.Domain.Entities
 {
     [Table("UserChats")]
     //Use this aggregate root instaed of user
-    public class UserChat : AggregateRoot
+    public class UserChat : Entity
     {
         public Guid UserId { get; private set; }
         public User? User { get; private set; }
@@ -21,8 +21,10 @@ namespace Telegram.Domain.Entities
         [BackingField(nameof(_folders))]
         public IReadOnlyList<Folder> Folders { get => _folders; }
 
+      
+
         internal UserChat(Guid id, Guid userId, Guid chatId, bool isArchived, bool isPinned, bool isDeleted, bool isNotifications)
-            : base(id)
+            :base(id)
         {
             UserId = userId;
             ChatId = chatId;

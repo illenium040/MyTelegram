@@ -26,6 +26,12 @@ namespace Telegram.Application.Chat.Commands
             var receiver = await _userRepository.GetByIdAsync(request.ReceiverUser);
             if (receiver is null) return Result.Failure<ChatEntity>(new("CreateChatCommandHandler.ReceiverUser", "User not found"));
 
+            if (await _chatRepository.IsExisting(initiator, receiver))
+            {
+                return Result.Failure<ChatEntity>(new("CreateChatCommandHandler", "Chat is already existing"));
+            }
+
+
             var chat = ChatEntity.Create(request.ChatType);
             _chatRepository.Add(chat);
             _chatRepository.AppendUser(initiator.AddChat(chat.Id));

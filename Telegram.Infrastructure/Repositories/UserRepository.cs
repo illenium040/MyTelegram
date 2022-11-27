@@ -9,30 +9,38 @@ namespace Telegram.Infrastructure.Repositories
 {
     internal class UserRepository : Repository<User, ApplicationDbContext>, IUserRepository
     {
-        private readonly UserManager<User> _userManager;
         private readonly DbSet<User> _users;
         private readonly DbSet<UserChat> _usersChats;
-        public UserRepository(ApplicationDbContext ctx, UserManager<User> manager) : base(ctx)
+        public UserRepository(ApplicationDbContext ctx) : base(ctx)
         {
-            _userManager = manager;
             _users = Context.Set<User>();
             _usersChats = Context.Set<UserChat>();
         }
         public override void Add(User entity) =>
             throw new NotImplementedException("This method is not allowed. Use CreateAsync instead.");
 
-        public async Task<Result> CreateAsync(User user, string password)
+        // TODO: Create full user creation with validation and password hashing
+        public async Task<Result> CreateAsync(User user)
         {
-            var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded) return Result.Success();
-            return Result.Failure("UserRepository.CreateAsync", result.Errors.Select(x => x.Description));
+            var userEmailExist = await _users.SingleOrDefaultAsync(x => x.Email == user.Email) ?? null;
+            if (userEmailExist is not null)
+            {
+                return Result.Failure(new Error("UserRepository.CreateAsync", "User with this email is already exist"));
+            }
+            var userLoginExist = await _users.SingleOrDefaultAsync(x => x.Login == user.Login);
+            if (userLoginExist is not null)
+            {
+                return Result.Failure(new Error("UserRepository.CreateAsync", "User with this login is already exist"));
+            }
+            var userEntry = await _users.AddAsync(user);
+            return Result.Success(userEntry.Entity);
         }
 
         public Task<User?> GetByDisplayNameAsync(string displayName)
             => _users.SingleOrDefaultAsync(x => x.DisplayName == displayName);
 
         public Task<User?> GetByNameAsync(string userName)
-            => _users.SingleOrDefaultAsync(x => x.UserName == userName);
+            => _users.SingleOrDefaultAsync(x => x.Login == userName);
 
         public Task<User?> GetByEmailAsync(string email)
             => _users.SingleOrDefaultAsync(x => x.Email == email);

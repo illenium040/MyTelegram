@@ -5,12 +5,16 @@ using Telegram.Domain.Primitivies;
 
 namespace Telegram.Domain.Entities
 {
-    [Table("AspNetUsers")]
-    public class User : IdentityUser<Guid>, IEntity
+    [Table("Users")]
+    public class User : AggregateRoot
     {
+        public string Email { get; private set; }
+        public string Login { get; private set; }
+        public string Password { get; private set; }
         public string DisplayName { get; private set; }
         public string? AvatarLink { get; private set; }
         public string? About { get; private set; }
+
 
         private List<UserChat> _chats;
         [BackingField(nameof(_chats))]
@@ -22,28 +26,31 @@ namespace Telegram.Domain.Entities
 
         private User(Guid id,
             string displayName,
-            string userName,
+            string login,
             string email,
+            string password,
             string? avatarLink = null,
             string? about = null)
+            :base(id)
         {
-            Id = id;
             Email = email;
-            UserName = userName;
+            Login = login;
             DisplayName = displayName;
             AvatarLink = avatarLink;
             About = about;
+            Password = password;
             _blocked = new List<BlockedUser>();
             _chats = new List<UserChat>();
         }
 
         public static User Create(
             string displayName,
-            string userName,
+            string login,
             string email,
+            string password,
             string? avatarLink = null,
             string? about = null)
-           => new User(Guid.NewGuid(), displayName, userName, email, avatarLink, about);
+           => new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
 
 
         public BlockedUser BlockUser(Guid userId)
@@ -62,14 +69,6 @@ namespace Telegram.Domain.Entities
             var chat = new UserChat(Guid.NewGuid(), Id, chatId, isArchived, isPinned, isDeleted, isNotifications);
             _chats.Add(chat);
             return chat;
-        }
-
-        public bool Equals(IEntity? other)
-        {
-            if (other is null) return false;
-            if (other.GetType() != GetType()) return false;
-            if (other is not Entity entity) return false;
-            return other.Id == entity.Id;
         }
     }
 }
