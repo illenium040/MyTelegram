@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using Telegram.Domain.DomainEvents;
 using Telegram.Domain.Primitivies;
 
 namespace Telegram.Domain.Entities
@@ -50,7 +51,11 @@ namespace Telegram.Domain.Entities
             string password,
             string? avatarLink = null,
             string? about = null)
-           => new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
+        {
+            var user = new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
+            user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, user.DisplayName));
+            return user;
+        }
 
 
         public BlockedUser BlockUser(Guid userId)

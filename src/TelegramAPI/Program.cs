@@ -15,28 +15,53 @@ using Web.Options;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Infrastructure.Cash;
 using Web.Middlewares;
+using Telegram.Infrastructure.Interceptors;
+using Quartz;
+using Telegram.Infrastructure.BackgroundJobs;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Add optioins through options pattern. All options defined here are injectable through IOptions<name>
 builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
 
-//set up configurations
+// Set up configurations
 builder.Services.Scan(selector => selector.FromAssemblies(Telegram.Infrastructure.AssembyReference.Assembly)
     .AddClasses(false)
     .UsingRegistrationStrategy(Scrutor.RegistrationStrategy.Skip)
     .AsImplementedInterfaces()
     .WithScopedLifetime());
-
+// Decorate repository interface with a specific repository
 builder.Services.Decorate<IUserRepository, UserRepositoryCache>();
-
+// Add pipeline behavior for validation pipeline to work with validation results
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-
-builder.Services.AddMediatR(Telegram.Application.AssemblyReference.Assembly);
+// Add all validators for commands and queries
 builder.Services.AddValidatorsFromAssembly(Telegram.Application.AssemblyReference.Assembly, includeInternalTypes: true);
-
+// Set up Quartz (background worker)
+builder.Services.AddQuartz(configure =>
+{
+    var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
+    configure.AddJob<ProcessOutboxMessagesJob>(jobKey)
+    .AddTrigger(trigger =>
+    {
+        trigger.ForJob(jobKey)
+        .WithSimpleSchedule(schedule =>
+        {
+            schedule.WithInterval(TimeSpan.FromSeconds(10))
+                    .RepeatForever();
+        }); 
+    });
+    configure.UseMicrosoftDependencyInjectionJobFactory();
+});
+builder.Services.AddQuartzHostedService();
+// Add libraries services
+builder.Services.AddMediatR(Telegram.Application.AssemblyReference.Assembly);
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
 
+// Add custom services
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>();
+builder.Services.AddSingleton<RaiseDomainEventsInterceptor>();
+
+// Set up EF Core
 builder.Services
             .AddEntityFrameworkNpgsql()
             .AddDbContext<ApplicationDbContext>((serviceProvider, options) =>
@@ -49,13 +74,15 @@ builder.Services
                 });
                 options.EnableDetailedErrors(dbOptions.EnableDetailedErrors);
                 options.EnableSensitiveDataLogging(dbOptions.EnableSensetiveDataLogging);
+
+                var interceptor = serviceProvider.GetRequiredService<RaiseDomainEventsInterceptor>();
+                options.AddInterceptors(interceptor);
             });
-
-
+// Set up controllers
 builder.Services
     .AddControllers()
-    .AddApplicationPart(Telegram.Presentation.AssemblyReference.Assembly);
-
+    .AddApplicationPart(Telegram.Presentation.AssemblyReference.Assembly); // All of controllers are in Presentation layer
+// Set up CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CORS", builder =>
@@ -70,11 +97,10 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
-
+// Set up Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>()
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -83,20 +109,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(opt => opt.DisplayRequestDuration());
 }
-
+// Default middlewares
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseCors("CORS");
-
 app.MapControllers();
 
-
+// Add custom middleware
 app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-//data seed
+// Data seed
 using (var scope = app.Services.CreateScope())
 {
     var unit = scope.ServiceProvider.GetRequiredService<IUnitOfWork<ApplicationDbContext>>();

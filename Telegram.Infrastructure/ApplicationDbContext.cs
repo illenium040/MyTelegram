@@ -54,6 +54,12 @@ namespace Telegram.Infrastructure
                 msg.Property(x => x.Type).HasConversion<string>();
             });
 
+            modelBuilder.Entity<OutboxMessage>(msg =>
+            {
+                msg.HasKey(x => x.Id);
+            });
+
+
             base.OnModelCreating(modelBuilder);
         }
 
