@@ -1,23 +1,18 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Quartz;
 using Telegram.Application.Behaviors;
 using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
 using Telegram.Infrastructure;
 using Telegram.Infrastructure.Abstractions;
-using Web.Options;
-using Microsoft.EntityFrameworkCore;
-using Telegram.Infrastructure.Cash;
-using Web.Middlewares;
-using Telegram.Infrastructure.Interceptors;
-using Quartz;
 using Telegram.Infrastructure.BackgroundJobs;
+using Telegram.Infrastructure.Cash;
+using Telegram.Infrastructure.Interceptors;
+using Web.Middlewares;
+using Web.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>
@@ -47,7 +42,7 @@ builder.Services.AddQuartz(configure =>
         {
             schedule.WithInterval(TimeSpan.FromSeconds(10))
                     .RepeatForever();
-        }); 
+        });
     });
     configure.UseMicrosoftDependencyInjectionJobFactory();
 });
