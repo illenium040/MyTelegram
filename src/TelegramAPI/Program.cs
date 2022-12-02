@@ -14,6 +14,7 @@ using Telegram.Infrastructure.Abstractions;
 using Web.Options;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Infrastructure.Cash;
+using Web.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,14 +53,7 @@ builder.Services
 
 
 builder.Services
-    .AddControllers(option =>
-    {
-        //option.EnableEndpointRouting = false;
-        //var policy = new AuthorizationPolicyBuilder()
-        //                    .RequireAuthenticatedUser()
-        //                    .Build();
-        //option.Filters.Add(new AuthorizeFilter(policy));
-    })
+    .AddControllers()
     .AddApplicationPart(Telegram.Presentation.AssemblyReference.Assembly);
 
 builder.Services.AddCors(options =>
@@ -80,6 +74,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<GlobalExceptionHandlingMiddleware>()
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -96,6 +92,9 @@ app.UseAuthorization();
 app.UseCors("CORS");
 
 app.MapControllers();
+
+
+app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
 //data seed
 using (var scope = app.Services.CreateScope())
