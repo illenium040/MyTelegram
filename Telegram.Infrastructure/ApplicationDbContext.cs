@@ -58,7 +58,10 @@ namespace Telegram.Infrastructure
             {
                 msg.HasKey(x => x.Id);
             });
-
+            modelBuilder.Entity<OutboxMessageConsumer>(msg =>
+            {
+                msg.HasKey(x => x.Id);
+            });
 
             base.OnModelCreating(modelBuilder);
         }

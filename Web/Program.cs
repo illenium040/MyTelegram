@@ -14,16 +14,19 @@ using Telegram.Infrastructure.Idempotence;
 using Telegram.Infrastructure.Interceptors;
 using Web.Middlewares;
 using Web.Options;
+using Scrutor;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>
 builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
 
 // Set up configurations
+builder.Services.AddMediatR(Telegram.Application.AssemblyReference.Assembly);
+
 builder.Services.Scan(selector => selector.FromAssemblies(
     Telegram.Infrastructure.AssembyReference.Assembly)
     .AddClasses(false)
-    .UsingRegistrationStrategy(Scrutor.RegistrationStrategy.Skip)
+    .UsingRegistrationStrategy(RegistrationStrategy.Skip)
     .AsImplementedInterfaces()
     .WithScopedLifetime());
 // Add pipeline behavior for validation pipeline to work with validation results
@@ -48,8 +51,7 @@ builder.Services.AddQuartz(configure =>
 });
 builder.Services.AddQuartzHostedService();
 // Set up Mediatr with Scrutor
-builder.Services.AddMediatR(Telegram.Application.AssemblyReference.Assembly);
-builder.Services.Decorate(typeof(NotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+builder.Services.Decorate(typeof(INotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
 builder.Services.Decorate<IUserRepository, UserRepositoryCache>();
 
 // Add libraries services
