@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
+using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
 using Telegram.Infrastructure.Abstractions;
 

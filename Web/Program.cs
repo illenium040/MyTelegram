@@ -10,6 +10,7 @@ using Telegram.Infrastructure;
 using Telegram.Infrastructure.Abstractions;
 using Telegram.Infrastructure.BackgroundJobs;
 using Telegram.Infrastructure.Cash;
+using Telegram.Infrastructure.Idempotence;
 using Telegram.Infrastructure.Interceptors;
 using Web.Middlewares;
 using Web.Options;
@@ -19,13 +20,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
 
 // Set up configurations
-builder.Services.Scan(selector => selector.FromAssemblies(Telegram.Infrastructure.AssembyReference.Assembly)
+builder.Services.Scan(selector => selector.FromAssemblies(
+    Telegram.Infrastructure.AssembyReference.Assembly)
     .AddClasses(false)
     .UsingRegistrationStrategy(Scrutor.RegistrationStrategy.Skip)
     .AsImplementedInterfaces()
     .WithScopedLifetime());
-// Decorate repository interface with a specific repository
-builder.Services.Decorate<IUserRepository, UserRepositoryCache>();
 // Add pipeline behavior for validation pipeline to work with validation results
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
 // Add all validators for commands and queries
@@ -47,8 +47,12 @@ builder.Services.AddQuartz(configure =>
     configure.UseMicrosoftDependencyInjectionJobFactory();
 });
 builder.Services.AddQuartzHostedService();
-// Add libraries services
+// Set up Mediatr with Scrutor
 builder.Services.AddMediatR(Telegram.Application.AssemblyReference.Assembly);
+builder.Services.Decorate(typeof(NotificationHandler<>), typeof(IdempotentDomainEventHandler<>));
+builder.Services.Decorate<IUserRepository, UserRepositoryCache>();
+
+// Add libraries services
 builder.Services.AddMemoryCache();
 builder.Services.AddSignalR();
 
@@ -98,7 +102,6 @@ builder.Services.AddSwaggerGen();
 
 
 var app = builder.Build();
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

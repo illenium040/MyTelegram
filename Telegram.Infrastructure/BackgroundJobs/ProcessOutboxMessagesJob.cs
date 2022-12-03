@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Polly;
 using Quartz;
+using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
-using Telegram.Domain.Primitivies;
 
 namespace Telegram.Infrastructure.BackgroundJobs
 {

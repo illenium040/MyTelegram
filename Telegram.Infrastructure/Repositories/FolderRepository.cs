@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
+using Telegram.Domain.Primitivies;
 using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Infrastructure.Repositories

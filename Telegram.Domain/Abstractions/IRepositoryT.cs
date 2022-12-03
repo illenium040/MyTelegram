@@ -1,6 +1,4 @@
-﻿using Telegram.Domain.Primitivies;
-
-namespace Telegram.Domain.Abstractions
+﻿namespace Telegram.Domain.Abstractions
 {
     public interface IRepository<TEntity>
         where TEntity : IEntity

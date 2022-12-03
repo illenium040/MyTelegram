@@ -1,4 +1,4 @@
-﻿namespace Telegram.Domain.Primitivies
+﻿namespace Telegram.Domain.Abstractions
 {
     public interface IEntity : IEquatable<IEntity?>
     {

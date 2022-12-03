@@ -1,4 +1,6 @@
-﻿namespace Telegram.Domain.Primitivies
+﻿using Telegram.Domain.Abstractions;
+
+namespace Telegram.Domain.Primitivies
 {
     public abstract class Entity : IEntity
     {

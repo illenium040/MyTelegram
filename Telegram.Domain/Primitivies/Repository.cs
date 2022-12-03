@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Telegram.Domain.Primitivies;
+using Telegram.Domain.Abstractions;
 
-namespace Telegram.Domain.Abstractions
+namespace Telegram.Domain.Primitivies
 {
     public abstract class Repository<TEntity, TContext> : IRepository<TEntity>
         where TEntity : class, IEntity
