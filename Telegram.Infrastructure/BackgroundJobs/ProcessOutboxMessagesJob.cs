@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Polly;
 using Quartz;
 using Telegram.Domain.Entities;
 using Telegram.Domain.Primitivies;
@@ -36,9 +37,16 @@ namespace Telegram.Infrastructure.BackgroundJobs
 
                 if (domainEvent is null) continue;
 
-                await _publisher.Publish(domainEvent, context.CancellationToken);
+                var pollyPolicy = Policy
+                    .Handle<Exception>()
+                    .WaitAndRetryAsync(3, attempt => TimeSpan.FromMilliseconds(100 * attempt));
 
+                var policyResult = await pollyPolicy.ExecuteAndCaptureAsync(() =>
+                    _publisher.Publish(domainEvent, context.CancellationToken));
+
+                message.Error = policyResult.FinalException.ToString();
                 message.ProcessedOnUtc = DateTime.UtcNow;
+               
             }
 
             await _dbContext.SaveChangesAsync();
