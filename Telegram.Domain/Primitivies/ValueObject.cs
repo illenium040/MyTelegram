@@ -1,19 +1,24 @@
-﻿namespace Telegram.Domain.Primitivies
+﻿using Telegram.Domain.Shared;
+
+namespace Telegram.Domain.Primitivies
 {
-    public abstract class ValueObject : IEquatable<ValueObject>
+    public abstract class ValueObject<T> : IEquatable<ValueObject<T>>
     {
+        public T Value { get; }
+        protected ValueObject(T value) => Value = value;
+
         public abstract IEnumerable<object> GetAtomicValues();
 
-        public bool Equals(ValueObject? other)
+        public bool Equals(ValueObject<T>? other)
             => other is not null && ValueAreEqual(other);
 
         public override bool Equals(object? obj)
-            => obj is ValueObject other && ValueAreEqual(other);
+            => obj is ValueObject<T> other && ValueAreEqual(other);
 
         public override int GetHashCode()
              => GetAtomicValues().Aggregate(default(int), HashCode.Combine);
 
-        private bool ValueAreEqual(ValueObject other) =>
+        private bool ValueAreEqual(ValueObject<T> other) =>
             GetAtomicValues().SequenceEqual(other.GetAtomicValues());
 
     }

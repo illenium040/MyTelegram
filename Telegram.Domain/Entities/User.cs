@@ -3,18 +3,19 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 using Telegram.Domain.DomainEvents;
 using Telegram.Domain.Primitivies;
+using Telegram.Domain.ValueObjects;
 
 namespace Telegram.Domain.Entities
 {
     [Table("Users")]
     public class User : AggregateRoot
     {
-        public string Email { get; private set; }
-        public string Login { get; private set; }
-        public string Password { get; private set; }
-        public string DisplayName { get; private set; }
+        public Email Email { get; private set; }
+        public Login Login { get; private set; }
+        public Password Password { get; private set; }
+        public DisplayName DisplayName { get; private set; }
         public string? AvatarLink { get; private set; }
-        public string? About { get; private set; }
+        public About? About { get; private set; }
 
 
         private List<UserChat> _chats;
@@ -26,12 +27,12 @@ namespace Telegram.Domain.Entities
         public IReadOnlyList<BlockedUser> BlockedUsers { get => _blocked; }
 
         private User(Guid id,
-            string displayName,
-            string login,
-            string email,
-            string password,
+            DisplayName displayName,
+            Login login,
+            Email email,
+            Password password,
             string? avatarLink = null,
-            string? about = null)
+            About? about = null)
             :base(id)
         {
             Email = email;
@@ -45,12 +46,12 @@ namespace Telegram.Domain.Entities
         }
 
         public static User Create(
-            string displayName,
-            string login,
-            string email,
-            string password,
+            DisplayName displayName,
+            Login login,
+            Email email,
+            Password password,
             string? avatarLink = null,
-            string? about = null)
+            About? about = null)
         {
             var user = new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
             user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, user.DisplayName));

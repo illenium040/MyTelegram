@@ -1,7 +1,9 @@
 ﻿using Telegram.Application.Abstractions;
 using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
+using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
+using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Application.Users.Commands
@@ -18,20 +20,43 @@ namespace Telegram.Application.Users.Commands
 
         public override async Task<Result<User>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
+            var emailResult = Email.Create(request.Email);
+            if (emailResult.IsFailure) 
+                return Result.Failure<User>(emailResult.Error!.ConcatCode(nameof(CreateUserCommandHandler)));
+
+            var passwordResult = Password.Create(request.Password);
+            if (passwordResult.IsFailure)
+                return Result.Failure<User>(passwordResult.Error!.ConcatCode(nameof(CreateUserCommandHandler)));
+            
+            var loginResult = Login.Create(request.Login);
+            if (loginResult.IsFailure)
+                return Result.Failure<User>(loginResult.Error!.ConcatCode(nameof(CreateUserCommandHandler)));
+
+            var aboutResult = About.Create(request.About);
+            if (aboutResult.IsFailure)
+                return Result.Failure<User>(aboutResult.Error!.ConcatCode(nameof(CreateUserCommandHandler)));
+
+            var displayNameResult = DisplayName.Create(request.DisplayName);
+            if (displayNameResult.IsFailure)
+                return Result.Failure<User>(aboutResult.Error!.ConcatCode(nameof(CreateUserCommandHandler)));
+
             var user = User.Create(
-                request.DisplayName,
-                request.UserName,
-                request.Email,
-                request.Password,
+                displayNameResult.Value!,
+                loginResult.Value!,
+                emailResult.Value!,
+                passwordResult.Value!,
                 request.AvatarLink,
-                request.About);
+                aboutResult.Value);
 
             var result = await _userRepository.CreateAsync(user);
 
             if (result.IsSuccess)
             {
                 var saveResult = await UnitOfWork.SaveChangesAsync();
-                if (saveResult.IsSuccess) return Result.Success(user);
+                if (saveResult.IsSuccess)
+                {
+                    return Result.Success(user);
+                }
                 return Result.Failure<User>(saveResult.Error);
             }
 

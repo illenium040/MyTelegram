@@ -51,5 +51,6 @@
             if (this == None || this == Null) return "";
             return $"{Code}: {Message}";
         }
+
     }
 }

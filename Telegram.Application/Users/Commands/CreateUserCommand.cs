@@ -5,7 +5,7 @@ namespace Telegram.Application.Users.Commands
 {
     public sealed record CreateUserCommand(
         string Email,
-        string UserName,
+        string Login,
         string DisplayName,
         string Password,
         string? AvatarLink = null,

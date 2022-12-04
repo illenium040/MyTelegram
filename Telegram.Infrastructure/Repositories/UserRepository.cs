@@ -43,7 +43,7 @@ namespace Telegram.Infrastructure.Repositories
             => _users.SingleOrDefaultAsync(x => x.Login == userName);
 
         public Task<User?> GetByEmailAsync(string email)
-            => _users.SingleOrDefaultAsync(x => x.Email == email);
+            => _users.SingleOrDefaultAsync(x => x.Email.Value == email);
 
         public void AppendChat(UserChat userChat) => _usersChats.Add(userChat);
     }

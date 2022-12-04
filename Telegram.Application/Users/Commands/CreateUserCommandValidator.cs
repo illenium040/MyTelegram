@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Telegram.Domain.ValueObjects;
 
 namespace Telegram.Application.Users.Commands
 {
@@ -8,16 +9,21 @@ namespace Telegram.Application.Users.Commands
         {
             RuleFor(c => c.Email)
                 .NotEmpty().NotNull()
-                .Must(x => x.Contains('@'));
-            RuleFor(c => c.UserName)
+                .Must(Email.IsValid)
+                .MaximumLength(Email.MaxLength);
+            RuleFor(c => c.Login)
                 .NotEmpty().NotNull()
                 .MaximumLength(30);
             RuleFor(c => c.DisplayName)
                 .NotEmpty().NotNull()
-                .MaximumLength(30);
+                .Must(DisplayName.IsValid)
+                .MinimumLength(DisplayName.MinLength)
+                .MaximumLength(DisplayName.MaxLength);
             RuleFor(c => c.Password)
                 .NotEmpty().NotNull()
-                .MaximumLength(20);
+                .Must(Password.IsValid)
+                .MinimumLength(Password.MinLength)
+                .MaximumLength(Password.MaxLength);
         }
     }
 }

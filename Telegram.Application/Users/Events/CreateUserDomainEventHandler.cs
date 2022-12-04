@@ -9,7 +9,7 @@ namespace Telegram.Application.Users.Events
         // As an example, you can send an email to the user
         public Task Handle(UserCreatedDomainEvent notification, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"User {notification.UserName} has been create successfully!");
+            Console.WriteLine($"User {notification.Login.Value} has been create successfully!");
             return Task.CompletedTask;
         }
     }
