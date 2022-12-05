@@ -17,9 +17,9 @@ namespace Telegram.Domain.ValueObjects
         private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
         private Login(string value) : base(value) { }
 
-        public static bool IsValid(string login) => Create(login).IsSuccess;
+        public static bool IsValid(string? login) => Create(login).IsSuccess;
 
-        public static Result<Login> Create(string login)
+        public static Result<Login> Create(string? login)
         {
             if (string.IsNullOrEmpty(login))
             {

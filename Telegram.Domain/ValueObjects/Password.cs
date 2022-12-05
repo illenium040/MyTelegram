@@ -19,9 +19,9 @@ namespace Telegram.Domain.ValueObjects
 
         private Password(string value) : base(value) { }
 
-        public static bool IsValid(string password) => Create(password).IsSuccess;
+        public static bool IsValid(string? password) => Create(password).IsSuccess;
 
-        public static Result<Password> Create(string password)
+        public static Result<Password> Create(string? password)
         {
             if (string.IsNullOrEmpty(password))
             {

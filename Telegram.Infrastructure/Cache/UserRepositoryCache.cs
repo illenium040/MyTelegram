@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Telegram.Domain.Entities;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
+using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Infrastructure.Cash
@@ -27,7 +28,7 @@ namespace Telegram.Infrastructure.Cash
 
         public Task<Result> CreateAsync(User user) => _userRepository.CreateAsync(user);
 
-        public Task<User?> GetByDisplayNameAsync(string displayName)
+        public Task<User?> GetByDisplayNameAsync(DisplayName displayName)
         {
             var key = $"{nameof(GetByDisplayNameAsync)}-{displayName}";
             return _memoryCache.GetOrCreateAsync(key, entry =>
@@ -37,7 +38,7 @@ namespace Telegram.Infrastructure.Cash
             });
         }
         //can be cached
-        public Task<User?> GetByEmailAsync(string email)
+        public Task<User?> GetByEmailAsync(Email email)
         {
             var key = $"{nameof(GetByEmailAsync)}-{email}";
             return _memoryCache.GetOrCreateAsync(key, entry =>
@@ -47,13 +48,13 @@ namespace Telegram.Infrastructure.Cash
             });
         }
         //can be cached
-        public Task<User?> GetByNameAsync(string userName)
+        public Task<User?> GetByLoginAsync(Login login)
         {
-            var key = $"{nameof(GetByNameAsync)}-{userName}";
+            var key = $"{nameof(GetByLoginAsync)}-{login}";
             return _memoryCache.GetOrCreateAsync(key, entry =>
             {
                 entry.SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-                return _userRepository.GetByNameAsync(userName);
+                return _userRepository.GetByLoginAsync(login);
             });
         }
     }

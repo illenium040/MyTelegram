@@ -21,5 +21,8 @@ namespace Telegram.Domain.Primitivies
         private bool ValueAreEqual(ValueObject<T> other) =>
             GetAtomicValues().SequenceEqual(other.GetAtomicValues());
 
+        public static bool operator ==(ValueObject<T> a, ValueObject<T> b) => a.Equals(b);
+        public static bool operator !=(ValueObject<T> a, ValueObject<T> b) => !a.Equals(b);
+
     }
 }

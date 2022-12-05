@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Telegram.Domain.Entities;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
+using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Infrastructure.Repositories
@@ -16,9 +17,6 @@ namespace Telegram.Infrastructure.Repositories
             _users = Context.Set<User>();
             _usersChats = Context.Set<UserChat>();
         }
-        public override void Add(User entity) =>
-            throw new NotImplementedException("This method is not allowed. Use CreateAsync instead.");
-
         // TODO: Create full user creation with validation and password hashing
         public async Task<Result> CreateAsync(User user)
         {
@@ -36,14 +34,14 @@ namespace Telegram.Infrastructure.Repositories
             return Result.Success(userEntry.Entity);
         }
 
-        public Task<User?> GetByDisplayNameAsync(string displayName)
+        public Task<User?> GetByDisplayNameAsync(DisplayName displayName)
             => _users.SingleOrDefaultAsync(x => x.DisplayName == displayName);
 
-        public Task<User?> GetByNameAsync(string userName)
-            => _users.SingleOrDefaultAsync(x => x.Login == userName);
+        public Task<User?> GetByLoginAsync(Login login)
+            => _users.SingleOrDefaultAsync(x => x.Login == login);
 
-        public Task<User?> GetByEmailAsync(string email)
-            => _users.SingleOrDefaultAsync(x => x.Email.Value == email);
+        public Task<User?> GetByEmailAsync(Email email)
+            => _users.SingleOrDefaultAsync(x => x.Email == email);
 
         public void AppendChat(UserChat userChat) => _usersChats.Add(userChat);
     }

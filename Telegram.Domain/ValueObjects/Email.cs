@@ -14,9 +14,9 @@ namespace Telegram.Domain.ValueObjects
         private Email(string email) : base(email)  { }
 
         // This method is used for validation
-        public static bool IsValid(string email) => Create(email).IsSuccess;
+        public static bool IsValid(string? email) => Create(email).IsSuccess;
 
-        public static Result<Email> Create(string email)
+        public static Result<Email> Create(string? email)
         {
             if (string.IsNullOrWhiteSpace(email))
             {

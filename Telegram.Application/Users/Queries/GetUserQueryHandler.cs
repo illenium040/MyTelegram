@@ -1,7 +1,9 @@
-﻿using Telegram.Application.Abstractions;
+﻿using Newtonsoft.Json.Linq;
+using Telegram.Application.Abstractions;
 using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
 using Telegram.Domain.Shared;
+using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Application.Users.Queries
@@ -16,11 +18,13 @@ namespace Telegram.Application.Users.Queries
 
         public override async Task<Result<User>> Handle(GetUserQuery request, CancellationToken cancellationToken)
         {
+            var loginResult = Login.Create(request.Login);
+            var displayNameResult = DisplayName.Create(request.DisplayName);
             var res = request switch
             {
                 { Id: not null } => await _userRepository.GetByIdAsync(request.Id.Value),
-                { UserName: not null } => await _userRepository.GetByNameAsync(request.UserName),
-                { DisplayName: not null } => await _userRepository.GetByDisplayNameAsync(request.DisplayName),
+                { Login: not null } => await _userRepository.GetByLoginAsync(loginResult.Value!),
+                { DisplayName: not null } => await _userRepository.GetByDisplayNameAsync(displayNameResult.Value!),
                 _ => throw new InvalidOperationException()
             };
 

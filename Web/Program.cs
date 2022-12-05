@@ -15,6 +15,7 @@ using Telegram.Infrastructure.Interceptors;
 using Web.Middlewares;
 using Web.Options;
 using Scrutor;
+using Telegram.Domain.ValueObjects;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>
@@ -130,10 +131,20 @@ using (var scope = app.Services.CreateScope())
     var blockRepo = scope.ServiceProvider.GetService<IBlockedUsersRepository>()!;
     var messageRepo = scope.ServiceProvider.GetService<IMessageRepository>()!;
     var folderRepo = scope.ServiceProvider.GetService<IFolderRepository>()!;
-
-    var user1 = User.Create("Elizabet", "lll4", "el@gmail.com", "aA1234!", "image.jpg", "");
-    var user2 = User.Create("Elizabet1", "lll5", "el2@gmail.com", "aA1234!", "image.jpg", "");
-    var user3 = User.Create("Elizabet2", "lll6", "el3@gmail.com", "aA1234!", "image.jpg", "");
+    var createFunc = delegate (string dsn, string login, string email, string pass, string avlink, string about)
+    {
+        return User.Create(
+            DisplayName.Create(dsn).Value!,
+            Login.Create(login).Value!,
+            Email.Create(email).Value!,
+            Password.Create(pass).Value!,
+            avlink,
+            About.Create(about).Value!
+            );
+    };
+    var user1 = createFunc("Elizabet", "lll4", "el@gmail.com", "aA1234!", "image.jpg", "");
+    var user2 = createFunc("Elizabet1", "lll5", "el2@gmail.com", "aA1234!", "image.jpg", "");
+    var user3 = createFunc("Elizabet2", "lll6", "el3@gmail.com", "aA1234!", "image.jpg", "");
     var chat = Chat.Create();
     await userRepo.CreateAsync(user1);
     await userRepo.CreateAsync(user2);

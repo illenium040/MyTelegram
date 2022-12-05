@@ -18,9 +18,9 @@ namespace Telegram.Domain.ValueObjects
 
         private DisplayName(string value) : base(value) { }
 
-        public static bool IsValid(string displayName) => Create(displayName).IsSuccess;
+        public static bool IsValid(string? displayName) => Create(displayName).IsSuccess;
 
-        public static Result<DisplayName> Create(string displayName)
+        public static Result<DisplayName> Create(string? displayName)
         {
             if (string.IsNullOrEmpty(displayName))
             {

@@ -16,7 +16,7 @@ namespace Telegram.Presentation.Controllers
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> GetAllAsync() => Ok(_chatRepository.GetAllAsync());
+        public async Task<IActionResult> GetAllAsync() => Ok(await _chatRepository.GetAllAsync().ToListAsync());
 
         [HttpGet("{chatId}")]
         public async Task<IActionResult> Get(

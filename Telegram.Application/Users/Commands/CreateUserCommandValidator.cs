@@ -13,7 +13,9 @@ namespace Telegram.Application.Users.Commands
                 .MaximumLength(Email.MaxLength);
             RuleFor(c => c.Login)
                 .NotEmpty().NotNull()
-                .MaximumLength(30);
+                .Must(Login.IsValid)
+                .MinimumLength(Login.MinLength)
+                .MaximumLength(Login.MaxLength);
             RuleFor(c => c.DisplayName)
                 .NotEmpty().NotNull()
                 .Must(DisplayName.IsValid)

@@ -54,7 +54,7 @@ namespace Telegram.Domain.Entities
             About? about = null)
         {
             var user = new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
-            user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, user.DisplayName));
+            user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, user.Login));
             return user;
         }
 
