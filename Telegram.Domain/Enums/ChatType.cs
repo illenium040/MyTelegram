@@ -1,8 +1,7 @@
-﻿namespace Telegram.Domain.Enums
+﻿namespace Telegram.Domain.Enums;
+
+public enum ChatType
 {
-    public enum ChatType
-    {
-        Private,
-        Channel
-    }
+    Private,
+    Channel
 }

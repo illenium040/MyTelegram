@@ -1,9 +1,8 @@
 ﻿using Telegram.Domain.Entities;
 
-namespace Telegram.Infrastructure.Abstractions
+namespace Telegram.Infrastructure.Abstractions;
+
+public interface IJwtGenerator
 {
-    public interface IJwtGenerator
-    {
-        string CreateToken(User user);
-    }
+    string CreateToken(User user);
 }

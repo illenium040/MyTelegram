@@ -1,11 +1,10 @@
 ﻿using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
 
-namespace Telegram.Infrastructure.Abstractions
+namespace Telegram.Infrastructure.Abstractions;
+
+public interface IChatRepository : IRepository<Chat>
 {
-    public interface IChatRepository : IRepository<Chat>
-    {
-        void AppendUser(UserChat user);
-        Task<bool> IsExisting(User first, User second);
-    }
+    void AppendUser(UserChat user);
+    Task<bool> IsExisting(User first, User second);
 }

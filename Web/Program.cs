@@ -3,20 +3,19 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Quartz;
+using Scrutor;
 using Telegram.Application.Behaviors;
 using Telegram.Domain.Abstractions;
 using Telegram.Domain.Entities;
+using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure;
 using Telegram.Infrastructure.Abstractions;
 using Telegram.Infrastructure.BackgroundJobs;
+using Telegram.Infrastructure.Cache;
 using Telegram.Infrastructure.Idempotence;
 using Telegram.Infrastructure.Interceptors;
 using Web.Middlewares;
 using Web.Options;
-using Scrutor;
-using Telegram.Domain.ValueObjects;
-using Newtonsoft.Json;
-using Telegram.Infrastructure.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>
@@ -40,15 +39,9 @@ builder.Services.AddQuartz(configure =>
 {
     var jobKey = new JobKey(nameof(ProcessOutboxMessagesJob));
     configure.AddJob<ProcessOutboxMessagesJob>(jobKey)
-    .AddTrigger(trigger =>
-    {
-        trigger.ForJob(jobKey)
-        .WithSimpleSchedule(schedule =>
-        {
-            schedule.WithInterval(TimeSpan.FromSeconds(10))
-                    .RepeatForever();
-        });
-    });
+    .AddTrigger(trigger => trigger.ForJob(jobKey)
+        .WithSimpleSchedule(schedule => schedule.WithInterval(TimeSpan.FromSeconds(10))
+                    .RepeatForever()));
     configure.UseMicrosoftDependencyInjectionJobFactory();
 });
 builder.Services.AddQuartzHostedService();
@@ -86,24 +79,17 @@ builder.Services
     .AddControllers()
     .AddApplicationPart(Telegram.Presentation.AssemblyReference.Assembly); // All of controllers are in Presentation layer
 // Set up CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("CORS", builder =>
-    {
-        builder.SetIsOriginAllowed((url) =>
+builder.Services.AddCors(options => options.AddPolicy("CORS", builder => builder.SetIsOriginAllowed((url) =>
         {
             var uri = new Uri(url);
-            return uri.Host == "localhost" || uri.Host == "127.0.0.1";
+            return uri.Host is "localhost" or "127.0.0.1";
         })
             .AllowAnyMethod()
             .AllowAnyHeader()
-            .AllowCredentials();
-    });
-});
+            .AllowCredentials()));
 // Set up Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

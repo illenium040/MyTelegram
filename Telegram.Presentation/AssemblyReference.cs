@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 
-namespace Telegram.Presentation
+namespace Telegram.Presentation;
+
+public class AssemblyReference
 {
-    public class AssemblyReference
-    {
-        public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
-    }
+    public static readonly Assembly Assembly = typeof(AssemblyReference).Assembly;
 }

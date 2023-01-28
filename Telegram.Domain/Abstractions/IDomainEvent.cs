@@ -1,9 +1,8 @@
 ﻿using MediatR;
 
-namespace Telegram.Domain.Abstractions
+namespace Telegram.Domain.Abstractions;
+
+public interface IDomainEvent : INotification
 {
-    public interface IDomainEvent : INotification
-    {
-        Guid Id { get; }
-    }
+    Guid Id { get; }
 }

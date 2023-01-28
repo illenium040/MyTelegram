@@ -1,7 +1,6 @@
-﻿namespace Telegram.Domain.Enums
+﻿namespace Telegram.Domain.Enums;
+
+public enum MessageType
 {
-    public enum MessageType
-    {
-        Text, Photo, Video, File, Audio, Link, Voice, GIF
-    }
+    Text, Photo, Video, File, Audio, Link, Voice, GIF
 }

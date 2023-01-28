@@ -1,52 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
 
-namespace Telegram.Domain.ValueObjects
+namespace Telegram.Domain.ValueObjects;
+
+public class DisplayName : ValueObject<string>
 {
-    public class DisplayName : ValueObject<string>
-    {
-        public static readonly int MaxLength = 20;
-        public static readonly int MinLength = 2;
+    public static readonly int MaxLength = 20;
+    public static readonly int MinLength = 2;
 
-        private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
+    private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
 
-        [JsonConstructor]
-        private DisplayName(string value) : base(value) { }
+    [JsonConstructor]
+    private DisplayName(string value) : base(value) { }
 
-        public static bool IsValid(string? displayName) => Create(displayName).IsSuccess;
+    public static bool IsValid(string? displayName) => Create(displayName).IsSuccess;
 
-        public static Result<DisplayName> Create(string? displayName)
-        {
-            if (string.IsNullOrEmpty(displayName))
-            {
-                return Result.Failure<DisplayName>(new Error(
-                    "DisplayName.Create",
-                    "DisplayName is empty"
-                    ));
-            }
+    public static Result<DisplayName> Create(string? displayName) => string.IsNullOrEmpty(displayName)
+            ? Result.Failure<DisplayName>(new Error(
+                "DisplayName.Create",
+                "DisplayName is empty"
+                ))
+            : !Regex.Match(displayName, _regexPattern).Success
+            ? Result.Failure<DisplayName>(new Error(
+                "DisplayName.Create",
+                $"DisplayName allowed to have only letters and digits in display name with min length of {MinLength} and max length of {MaxLength}"
+                ))
+            : Result.Success<DisplayName>(new(displayName));
 
-            if (!Regex.Match(displayName, _regexPattern).Success) 
-            {
-                return Result.Failure<DisplayName>(new Error(
-                    "DisplayName.Create",
-                    $"DisplayName allowed to have only letters and digits in display name with min length of {MinLength} and max length of {MaxLength}"
-                    ));
-            }
-
-            return Result.Success<DisplayName>(new(displayName));
-        }
-
-
-        public override IEnumerable<object> GetAtomicValues()
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public override IEnumerable<object> GetAtomicValues() => throw new NotImplementedException();
 }

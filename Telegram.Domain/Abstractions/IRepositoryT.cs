@@ -1,12 +1,11 @@
-﻿namespace Telegram.Domain.Abstractions
+﻿namespace Telegram.Domain.Abstractions;
+
+public interface IRepository<TEntity>
+    where TEntity : IEntity
 {
-    public interface IRepository<TEntity>
-        where TEntity : IEntity
-    {
-        IAsyncEnumerable<TEntity?> GetAllAsync();
-        Task<TEntity?> GetByIdAsync(Guid id);
-        void Add(TEntity entity);
-        void Update(TEntity entity);
-        void Remove(TEntity entity);
-    }
+    IAsyncEnumerable<TEntity?> GetAllAsync();
+    Task<TEntity?> GetByIdAsync(Guid id);
+    void Add(TEntity entity);
+    void Update(TEntity entity);
+    void Remove(TEntity entity);
 }

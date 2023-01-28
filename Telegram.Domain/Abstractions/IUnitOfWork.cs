@@ -1,10 +1,9 @@
 ﻿using Telegram.Domain.Shared;
 
-namespace Telegram.Domain.Abstractions
+namespace Telegram.Domain.Abstractions;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        Task<Result> SaveChangesAsync();
-        Result SaveChanges();
-    }
+    Task<Result> SaveChangesAsync();
+    Result SaveChanges();
 }

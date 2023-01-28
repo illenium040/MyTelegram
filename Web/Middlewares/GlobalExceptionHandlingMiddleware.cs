@@ -2,40 +2,36 @@
 using System.Net;
 using System.Text.Json;
 
-namespace Web.Middlewares
+namespace Web.Middlewares;
+
+public class GlobalExceptionHandlingMiddleware : IMiddleware
 {
-    public class GlobalExceptionHandlingMiddleware : IMiddleware
+    private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
+
+    public GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger) => _logger = logger;
+
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
-
-        public GlobalExceptionHandlingMiddleware(ILogger<GlobalExceptionHandlingMiddleware> logger)
+        try
         {
-            _logger = logger;
+            await next(context);
         }
-
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        catch (Exception ex)
         {
-            try
+            _logger.LogError(ex, ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var details = new ProblemDetails
             {
-                await next(context);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                Status = (int)HttpStatusCode.InternalServerError,
+                Title = "Internal server error",
+                Detail = ex.Message,
+                Type = "Internal server error"
+            };
 
-                var details = new ProblemDetails
-                {
-                    Status = (int)HttpStatusCode.InternalServerError,
-                    Title = "Internal server error",
-                    Detail = ex.Message,
-                    Type = "Internal server error"
-                };
+            context.Response.ContentType = "application/json";
 
-                context.Response.ContentType = "application/json";
-
-                await context.Response.WriteAsync(JsonSerializer.Serialize(details));
-            }
+            await context.Response.WriteAsync(JsonSerializer.Serialize(details));
         }
     }
 }

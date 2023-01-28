@@ -3,16 +3,15 @@ using Telegram.Domain.Entities;
 using Telegram.Domain.Shared;
 using Telegram.Domain.ValueObjects;
 
-namespace Telegram.Infrastructure.Abstractions
+namespace Telegram.Infrastructure.Abstractions;
+
+public interface IUserRepository : IRepository<User>
 {
-    public interface IUserRepository : IRepository<User>
-    {
-        Task<User?> GetByDisplayNameAsync(DisplayName displayName);
-        Task<User?> GetByLoginAsync(Login login);
-        Task<User?> GetByEmailAsync(Email email);
+    Task<User?> GetByDisplayNameAsync(DisplayName displayName);
+    Task<User?> GetByLoginAsync(Login login);
+    Task<User?> GetByEmailAsync(Email email);
 
-        Task<Result> CreateAsync(User user);
+    Task<Result> CreateAsync(User user);
 
-        void AppendChat(UserChat userChat);
-    }
+    void AppendChat(UserChat userChat);
 }
