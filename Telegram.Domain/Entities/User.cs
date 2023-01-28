@@ -10,12 +10,12 @@ namespace Telegram.Domain.Entities
     [Table("Users")]
     public class User : AggregateRoot
     {
-        public Email Email { get; private set; }
-        public Login Login { get; private set; }
-        public Password Password { get; private set; }
-        public DisplayName DisplayName { get; private set; }
+        public string Email { get; private set; }
+        public string Login { get; private set; }
+        public string Password { get; private set; }
+        public string DisplayName { get; private set; }
         public string? AvatarLink { get; private set; }
-        public About? About { get; private set; }
+        public string? About { get; private set; }
 
 
         private List<UserChat> _chats;
@@ -26,6 +26,25 @@ namespace Telegram.Domain.Entities
         [BackingField(nameof(_blocked))]
         public IReadOnlyList<BlockedUser> BlockedUsers { get => _blocked; }
 
+        internal User(
+            Guid id,
+            string email, 
+            string login,
+            string password, 
+            string displayName,
+            string? avatarLink, 
+            string? about) : base(id)
+        {
+            Email = email;
+            Login = login;
+            Password = password;
+            DisplayName = displayName;
+            AvatarLink = avatarLink;
+            About = about;
+            _chats = new();
+            _blocked = new();
+        }
+
         private User(Guid id,
             DisplayName displayName,
             Login login,
@@ -35,12 +54,12 @@ namespace Telegram.Domain.Entities
             About? about = null)
             :base(id)
         {
-            Email = email;
-            Login = login;
-            DisplayName = displayName;
+            Email = email.Value;
+            Login = login.Value;
+            DisplayName = displayName.Value;
             AvatarLink = avatarLink;
-            About = about;
-            Password = password;
+            About = about.Value;
+            Password = password.Value;
             _blocked = new List<BlockedUser>();
             _chats = new List<UserChat>();
         }
@@ -54,7 +73,7 @@ namespace Telegram.Domain.Entities
             About? about = null)
         {
             var user = new User(Guid.NewGuid(), displayName, login, email, password, avatarLink, about);
-            user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, user.Login));
+            user.RaiseDomainEvent(new UserCreatedDomainEvent(user.Id, login));
             return user;
         }
 

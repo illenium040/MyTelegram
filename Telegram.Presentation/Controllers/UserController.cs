@@ -2,33 +2,41 @@
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Application.Users.Commands;
 using Telegram.Application.Users.Queries;
-using Telegram.Infrastructure.Abstractions;
 using Telegram.Presentation.Abstractions;
 
 namespace Telegram.Presentation.Controllers
 {
     public sealed class UserController : ApiController
     {
-        private readonly IUserRepository _userRepository;
-        public UserController(ISender sender, IUserRepository userRepository) : base(sender)
+        public UserController(ISender sender) : base(sender) { }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByName(Guid id, CancellationToken cancellationToken)
         {
-            _userRepository = userRepository;
+            var command = new GetUserByIdQuery(id);
+            var result = await Sender.Send(command, cancellationToken);
+
+            return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllAsync() => Ok(await _userRepository.GetAllAsync().ToListAsync());
 
         [HttpGet]
         public async Task<IActionResult> GetByName(
             [FromQuery] string? displayName,
             [FromQuery] string? userName,
-            [FromQuery] Guid? id,
             CancellationToken cancellationToken)
         {
-            var command = new GetUserQuery(id, userName, displayName);
+            if (displayName == null && userName == null) 
+            {
+                var usersResult = await Sender.Send(new GetAllUsersQuery(), cancellationToken);
+                return usersResult.IsSuccess ? Ok(usersResult.Value) : HandleFailure(usersResult);
+            }
+
+            var command = new GetUserQuery(userName, displayName);
             var result = await Sender.Send(command, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value!.Id) : HandleFailure(result);
+            return result.IsSuccess ? Ok(result.Value) : HandleFailure(result);
         }
 
         [HttpPost]

@@ -142,9 +142,9 @@ using (var scope = app.Services.CreateScope())
             About.Create(about).Value!
             );
     };
-    var user1 = createFunc("Elizabet", "lll4", "el@gmail.com", "aA1234!", "image.jpg", "");
-    var user2 = createFunc("Elizabet1", "lll5", "el2@gmail.com", "aA1234!", "image.jpg", "");
-    var user3 = createFunc("Elizabet2", "lll6", "el3@gmail.com", "aA1234!", "image.jpg", "");
+    var user1 = createFunc("Elizabet", "lll4", "el@gmail.com", "aA1234!22", "image.jpg", "");
+    var user2 = createFunc("Elizabet1", "lll5", "el2@gmail.com", "aA1234!22", "image.jpg", "");
+    var user3 = createFunc("Elizabet2", "lll6", "el3@gmail.com", "aA1234!22", "image.jpg", "");
     var chat = Chat.Create();
     await userRepo.CreateAsync(user1);
     await userRepo.CreateAsync(user2);

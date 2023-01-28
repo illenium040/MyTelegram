@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Telegram.Application\Telegram.Application.csproj" />
-    <ProjectReference Include="..\Telegram.Infrastructure\Telegram.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

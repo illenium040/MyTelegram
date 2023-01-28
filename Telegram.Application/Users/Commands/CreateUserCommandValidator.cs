@@ -5,8 +5,11 @@ namespace Telegram.Application.Users.Commands
 {
     internal sealed class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
     {
+        
         public CreateUserCommandValidator()
         {
+            
+
             RuleFor(c => c.Email)
                 .NotEmpty().NotNull()
                 .Must(Email.IsValid)

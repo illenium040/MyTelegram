@@ -12,7 +12,7 @@ namespace Telegram.Domain.ValueObjects
     public class Login : ValueObject<string>
     {
         public static readonly int MaxLength = 20;
-        public static readonly int MinLength = 8;
+        public static readonly int MinLength = 4;
 
         private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
         private Login(string value) : base(value) { }

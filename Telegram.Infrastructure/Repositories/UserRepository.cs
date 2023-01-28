@@ -35,13 +35,13 @@ namespace Telegram.Infrastructure.Repositories
         }
 
         public Task<User?> GetByDisplayNameAsync(DisplayName displayName)
-            => _users.SingleOrDefaultAsync(x => x.DisplayName == displayName);
+            => _users.SingleOrDefaultAsync(x => x.DisplayName == displayName.Value);
 
         public Task<User?> GetByLoginAsync(Login login)
-            => _users.SingleOrDefaultAsync(x => x.Login == login);
+            => _users.SingleOrDefaultAsync(x => x.Login == login.Value);
 
         public Task<User?> GetByEmailAsync(Email email)
-            => _users.SingleOrDefaultAsync(x => x.Email == email);
+            => _users.SingleOrDefaultAsync(x => x.Email == email.Value);
 
         public void AppendChat(UserChat userChat) => _usersChats.Add(userChat);
     }
