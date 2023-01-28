@@ -9,7 +9,6 @@ using Telegram.Domain.Entities;
 using Telegram.Infrastructure;
 using Telegram.Infrastructure.Abstractions;
 using Telegram.Infrastructure.BackgroundJobs;
-using Telegram.Infrastructure.Cash;
 using Telegram.Infrastructure.Idempotence;
 using Telegram.Infrastructure.Interceptors;
 using Web.Middlewares;
@@ -17,6 +16,7 @@ using Web.Options;
 using Scrutor;
 using Telegram.Domain.ValueObjects;
 using Newtonsoft.Json;
+using Telegram.Infrastructure.Cache;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>

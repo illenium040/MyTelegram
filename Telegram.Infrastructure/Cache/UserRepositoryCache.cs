@@ -10,14 +10,14 @@ using Telegram.Domain.Shared;
 using Telegram.Domain.ValueObjects;
 using Telegram.Infrastructure.Abstractions;
 
-namespace Telegram.Infrastructure.Cash
+namespace Telegram.Infrastructure.Cache
 {
     public class UserRepositoryCache : Repository<User, ApplicationDbContext>, IUserRepository
     {
         private readonly IUserRepository _userRepository;
         private readonly IMemoryCache _memoryCache;
-        public UserRepositoryCache(IUserRepository userRepository, 
-            IMemoryCache memoryCache, 
+        public UserRepositoryCache(IUserRepository userRepository,
+            IMemoryCache memoryCache,
             ApplicationDbContext context) : base(context)
         {
             _userRepository = userRepository;
