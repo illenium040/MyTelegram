@@ -18,18 +18,6 @@ using Scrutor;
 using Telegram.Domain.ValueObjects;
 using Newtonsoft.Json;
 
-var l = JsonConvert.DeserializeObject<IDomainEvent>(
-    @"{""$type"":""Telegram.Domain.DomainEvents.UserCreatedDomainEvent, Telegram.Domain"",""Id"":""079131c1-944f-4fdf-b092-93e37271f354"",""Login"":{""$type"":""Telegram.Domain.ValueObjects.Login, Telegram.Domain"",""Value"":""string123""}}",
-    new JsonSerializerSettings
-    {
-        TypeNameHandling = TypeNameHandling.All
-    }
-);
-
-Console.WriteLine(l.Id);
-
-return;
-
 var builder = WebApplication.CreateBuilder(args);
 // Add optioins through options pattern. All options defined here are injectable through IOptions<name>
 builder.Services.ConfigureOptions<DatabaseOptionsSetup>();
