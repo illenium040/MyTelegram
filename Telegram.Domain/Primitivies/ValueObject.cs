@@ -1,4 +1,5 @@
-﻿using Telegram.Domain.Shared;
+﻿using System.Text.Json.Serialization;
+using Telegram.Domain.Shared;
 
 namespace Telegram.Domain.Primitivies
 {

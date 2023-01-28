@@ -58,7 +58,7 @@ namespace Telegram.Domain.Entities
             Login = login.Value;
             DisplayName = displayName.Value;
             AvatarLink = avatarLink;
-            About = about.Value;
+            About = about?.Value;
             Password = password.Value;
             _blocked = new List<BlockedUser>();
             _chats = new List<UserChat>();

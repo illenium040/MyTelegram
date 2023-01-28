@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
@@ -11,6 +12,8 @@ namespace Telegram.Domain.ValueObjects
     public class Email : ValueObject<string>
     {
         public static readonly int MaxLength = 50;
+        
+        [JsonConstructor]
         private Email(string email) : base(email)  { }
 
         // This method is used for validation

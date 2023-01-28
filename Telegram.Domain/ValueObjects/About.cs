@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
 
@@ -13,6 +8,7 @@ namespace Telegram.Domain.ValueObjects
     {
         public static readonly int MaxLength = 150;
 
+        [JsonConstructor]
         private About(string value) : base(value) { }
 
         public static Result<About> Create(string? about)

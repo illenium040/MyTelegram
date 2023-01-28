@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 using Telegram.Domain.Primitivies;
 using Telegram.Domain.Shared;
+using Newtonsoft.Json;
 
 namespace Telegram.Domain.ValueObjects
 {
@@ -15,6 +11,8 @@ namespace Telegram.Domain.ValueObjects
         public static readonly int MinLength = 4;
 
         private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
+
+        [JsonConstructor]
         private Login(string value) : base(value) { }
 
         public static bool IsValid(string? login) => Create(login).IsSuccess;

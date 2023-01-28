@@ -12,7 +12,7 @@ using Telegram.Infrastructure.Abstractions;
 
 namespace Telegram.Application.Users.Queries.Handlers
 {
-    internal class GetAllUsersQueryHandler : QueryHandler<GetAllUsersQuery, IEnumerable<User>>
+    internal class GetAllUsersQueryHandler : QueryHandler<GetAllUsersQuery, IEnumerable<User?>>
     {
         private readonly IUserRepository _userRepository;
         public GetAllUsersQueryHandler(IUserRepository userRepository, IUnitOfWork unitOfWork) : base(unitOfWork)
@@ -24,7 +24,7 @@ namespace Telegram.Application.Users.Queries.Handlers
         {
             var res = await _userRepository.GetAllAsync().ToListAsync(cancellationToken);
 
-            if (res is null) return Result.Failure<IEnumerable<User>>(new Error("GetAllUsers", "No users"));
+            if (res is null) return Result.Failure<IEnumerable<User?>>(new Error("GetAllUsers", "No users"));
 
             return Result.Success(res.AsEnumerable());
         }

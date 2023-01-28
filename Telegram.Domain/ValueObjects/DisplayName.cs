@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Telegram.Domain.Primitivies;
@@ -16,6 +17,7 @@ namespace Telegram.Domain.ValueObjects
 
         private static readonly string _regexPattern = $"^[a-zA-Z0-9_.-]{{{MinLength},{MaxLength}}}$";
 
+        [JsonConstructor]
         private DisplayName(string value) : base(value) { }
 
         public static bool IsValid(string? displayName) => Create(displayName).IsSuccess;
